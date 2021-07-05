@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: pgpass
+      POSTGRES_USER: hermes
+      POSTGRES_DB: hermes
+      PGDATA: /var/lib/postgresql/data/hermes
+    volumes:
+      - db_data:/var/lib/postgresql/data
+  app:
+    image: fanficdev/alexandria:0.0.1
+    restart: always
+    ports:
+      - "59394:5000"
+    # TODO: get app to actually wait the db is up
+    depends_on:
+      - db
+
+volumes:
+  db_data:
+
+#nginx uwsgi?
+

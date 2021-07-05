@@ -1,0 +1,17 @@
+The contents of this repository should let a user run a dev instance of the
+Alexandria API through docker.
+
+Currently Alexandria's prod environment depends on a few things to be fully
+functional:
+	postgresql
+	nginx
+	uwsgi
+
+The first is setup by the docker-compose.yml file, but the latter two are
+currently missing in lieu of Flask's development web server.
+
+Just run
+	./build.sh && docker-compose up
+to build, run, and tail the logs. The local instance of Alexandria will be
+available on :59394 .
+
