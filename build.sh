@@ -14,9 +14,16 @@ if ! ./bin/check_setup.sh; then
 fi
 cd ..
 
+export USER_UID="${UID}"
+export USER_GID="$(id -g)"
+
+echo "using USER_UID=${USER_UID} USER_GID=${USER_GID}"
+
 docker build \
 	--build-arg "BUILD_DATE=${BUILD_DATE}" \
 	--build-arg "VERSION=${VERSION}" \
+	--build-arg "USER_UID=${USER_UID}" \
+	--build-arg "USER_GID=${USER_GID}" \
 	-t fanficdev/alexandria:${VERSION} \
 	.
 

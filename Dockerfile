@@ -2,7 +2,10 @@ FROM python:3.11.6-slim-bookworm
 
 ARG BUILD_DATE
 ARG VERSION
-LABEL build_version="version:- ${VERSION} build-date:- ${BUILD_DATE}"
+ARG USER_UID
+ARG USER_GID
+
+LABEL build_version="version:- ${VERSION} build-date:- ${BUILD_DATE} USER_UID:- ${USER_UID} USER_GID:- ${USER_GID}"
 LABEL maintainer="iris"
 
 ENV APPNAME="alexandria" UMASK_SET="022"
@@ -11,7 +14,8 @@ RUN apt-get update && apt-get -y install gcc libpq-dev libglib2.0-dev
 
 RUN python -m pip install virtualenv
 
-RUN useradd -ms /bin/bash alexandria && \
+RUN groupadd --gid ${USER_GID} alexandria && \
+	useradd --uid ${USER_UID} --gid ${USER_GID} -s /bin/bash -m alexandria && \
 	mkdir -p /app/alexandria/ && \
 	chown alexandria:alexandria /app/alexandria/
 
