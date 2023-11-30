@@ -1,11 +1,13 @@
+# alexandria_api_infra-dev
+
 The contents of this repository should let a user run a dev instance of the
 Alexandria API through docker.
 
-Currently Alexandria's prod environment depends on a few things to be fully
-functional:
-	postgresql
-	nginx
-	uwsgi
+Currently Alexandria's production environment depends on a few things to be
+fully functional:
+  * postgresql
+  * nginx
+  * uwsgi
 
 The first is setup by the docker-compose.yml file, but the latter two are
 currently missing in lieu of Flask's development web server.
@@ -14,8 +16,8 @@ currently missing in lieu of Flask's development web server.
 
 ## One-time preparation
 
-1. Run `./build.sh` to clone `hermes` locally and build the image, which should
-fail the first time with an error:
+1. Run `./build.sh` to clone `hermes` locally and build the docker image, which
+should fail the first time with an error:
     error: no priv.py file
 
 2. Create a local `priv.py` file.
@@ -25,6 +27,22 @@ fail the first time with an error:
 3. Run `./build.sh` to build the dev container image.
 
 At this point all one-time preparation should be complete.
+
+### docker engine vs docker desktop
+
+The main Dockerfile creates a user inside the container matching the host user
+to match permissions on the mounted source. On docker desktop, mounts are
+always mounted as root so an alternate desktop.Dockerfile is included which
+should work better there.
+
+`./build.sh` will auto detect whether docker desktop or docker engine is being
+used, but can be forced to build one container or the other via the second
+argument:
+    `./build.sh engine`
+or
+    `./build.sh desktop`
+
+See also `./build.sh --help` .
 
 ## Run in docker-compose
 
@@ -73,8 +91,10 @@ assignment.
 ### With hermes
 
 The `hermes` CLI can be pointed to the docker-compose db fairly easily. If you
-don't already have a venv for it locally, create it:
+don't already have a venv for it locally, create it either with the make target:
+    `make venv`
 
+or manually via:
 1. `cd hermes`
 2. `python -m venv ./venv`
 3. `./venv/bin/python -m pip install --upgrade pip`

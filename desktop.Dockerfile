@@ -1,11 +1,12 @@
+# This is a variant of Dockerfile which does not create a user inside the
+# container, and instead runs everything as root to work around docker desktop
+# issues.
 FROM python:3.11.6-slim-bookworm
 
 ARG BUILD_DATE
 ARG VERSION
-ARG USER_UID
-ARG USER_GID
 
-LABEL build_version="version:- ${VERSION} build-date:- ${BUILD_DATE} USER_UID:- ${USER_UID} USER_GID:- ${USER_GID}"
+LABEL build_version="version:- ${VERSION} build-date:- ${BUILD_DATE}"
 LABEL maintainer="iris"
 
 ENV APPNAME="alexandria" UMASK_SET="022"
@@ -14,12 +15,8 @@ RUN apt-get update && apt-get -y install gcc libpq-dev libglib2.0-dev
 
 RUN python -m pip install virtualenv
 
-RUN groupadd --gid ${USER_GID} alexandria && \
-	useradd --uid ${USER_UID} --gid ${USER_GID} -s /bin/bash -m alexandria && \
-	mkdir -p /app/alexandria/hermes/ && \
-	chown -R alexandria:alexandria /app/alexandria/
+RUN mkdir -p /app/alexandria/hermes/
 
-USER alexandria
 WORKDIR /app/alexandria/
 
 ENV VIRTUAL_ENV=/app/alexandria/venv
