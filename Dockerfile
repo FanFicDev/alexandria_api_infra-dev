@@ -1,4 +1,4 @@
-FROM python:3.9.6-slim-buster
+FROM python:3.11.6-slim-bookworm
 
 ARG BUILD_DATE
 ARG VERSION
@@ -22,16 +22,12 @@ ENV VIRTUAL_ENV=/app/alexandria/venv
 RUN python -m virtualenv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-COPY --chown=alexandria \
-	./hermes/alexandria_api_requirements.txt ./requirements.txt
-
 RUN python -m pip install --upgrade pip
-RUN python -m pip install -r requirements.txt
 
-COPY --chown=alexandria hermes/ ./
+WORKDIR /app/alexandria/hermes
 
 ENV OIL_DB_HOST=db OIL_DB_DBNAME=hermes OIL_DB_USER=hermes OIL_DB_PASSWORD=pgpass
+ENV FLASK_APP=./alexandria_api.py FLASK_ENV=development
 
-ENV FLASK_APP=alexandria_api.py FLASK_ENV=development
-CMD python ./schema.py --init && python -m flask run --host 0.0.0.0
+CMD python -m pip install -r ./alexandria_api_requirements.txt && python ./schema.py --init && python -m flask run --host 0.0.0.0
 

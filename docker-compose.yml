@@ -6,19 +6,29 @@ services:
     restart: always
     environment:
       POSTGRES_PASSWORD: pgpass
-      POSTGRES_USER: hermes
-      POSTGRES_DB: hermes
+      POSTGRES_USER: &USERNAME hermes
+      POSTGRES_DB: &DATABASE hermes
       PGDATA: /var/lib/postgresql/data/hermes
+    #ports:
+    #  - "127.0.0.1:15432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", *USERNAME, "-d", *DATABASE, "-q"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 3s
   app:
     image: fanficdev/alexandria:0.0.1
     restart: always
     ports:
-      - "59394:5000"
-    # TODO: get app to actually wait the db is up
+      - "127.0.0.1:59394:5000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    volumes:
+      - './hermes/:/app/alexandria/hermes/'
 
 volumes:
   db_data:
